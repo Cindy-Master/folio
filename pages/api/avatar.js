@@ -4,8 +4,8 @@ const { isAuthenticated } = require('../../lib/auth')
 
 const ALLOWED_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'])
 
-module.exports = handler
-module.exports.config = { api: { bodyParser: false } }
+export default handler
+export const config = { api: { bodyParser: false } }
 
 function parseFile(req) {
   return new Promise((resolve, reject) => {

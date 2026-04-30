@@ -1,7 +1,7 @@
 const { isAuthenticated } = require('../../lib/auth')
 const { getProfile, updateProfile } = require('../../lib/data')
 
-module.exports = function handler(req, res) {
+export default function handler(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json(getProfile())
   }

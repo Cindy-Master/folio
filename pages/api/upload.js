@@ -6,8 +6,8 @@ const { addPhotoToCollection } = require('../../lib/data')
 const ALLOWED_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.bmp', '.tiff'])
 const MAX_SIZE = 20 * 1024 * 1024 // 20MB
 
-module.exports = handler
-module.exports.config = { api: { bodyParser: false } }
+export default handler
+export const config = { api: { bodyParser: false } }
 
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {

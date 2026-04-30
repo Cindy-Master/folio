@@ -1,7 +1,7 @@
 const { isAuthenticated } = require('../../lib/auth')
 const { removePhotoFromCollection, reorderPhotos, updatePhoto } = require('../../lib/data')
 
-module.exports = function handler(req, res) {
+export default function handler(req, res) {
   if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
