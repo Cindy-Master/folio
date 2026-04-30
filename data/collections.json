@@ -1,0 +1,203 @@
+[
+  {
+    "id": "1",
+    "slug": "street-stories",
+    "title": "Street Stories",
+    "description": "Moments captured on the streets.",
+    "location": "Shanghai, China",
+    "date": "2024-06 ~ 2025-03",
+    "custom": {
+      "Style": "Documentary",
+      "Theme": "City & People"
+    },
+    "photos": [
+      {
+        "src": "/photos/collections/sample-collection-1/01.jpg",
+        "title": "Morning Mist Valley",
+        "description": "Early morning fog lingering between the mountains.",
+        "location": "Dali, Yunnan",
+        "date": "2024-11-03",
+        "camera": "Fujifilm X100V",
+        "note": "Set out at 3am, crossed two mountains to reach this spot. Waited two hours for the mist to rise.",
+        "custom": {
+          "Film Simulation": "Classic Neg",
+          "Aperture": "f/5.6",
+          "Shutter": "1/125s",
+          "ISO": "400"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-1/02.jpg",
+        "title": "Raindrop on Leaf",
+        "description": "A single water droplet suspended on a leaf tip, refracting the world.",
+        "location": "West Lake, Hangzhou",
+        "date": "2024-09-15",
+        "camera": "Sony A7R V + 90mm Macro",
+        "note": "The macro world never ceases to amaze.",
+        "custom": {
+          "Aperture": "f/2.8",
+          "Shutter": "1/500s",
+          "ISO": "200"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-1/03.jpg",
+        "title": "Dreamcatcher",
+        "description": "Sunlight threading through a dreamcatcher, weaving a golden dream.",
+        "location": "Shuhe Ancient Town, Lijiang",
+        "date": "2024-12-20",
+        "camera": "Fujifilm X100V",
+        "note": "Found this in a small shop in the ancient town. The owner said she made it by hand.",
+        "custom": {
+          "Film Simulation": "Astia"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-1/04.jpg",
+        "title": "Cable Car Traveler",
+        "description": "Looking down from above, all worries become small.",
+        "location": "Jungfrau, Switzerland",
+        "date": "2025-01-08",
+        "camera": "Leica Q3",
+        "note": "Minus fifteen degrees, fingers nearly too frozen to press the shutter.",
+        "custom": {
+          "Aperture": "f/4",
+          "Altitude": "3454m"
+        }
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "slug": "urban-light",
+    "title": "Urban Light",
+    "description": "City lights and shadows.",
+    "location": "Tokyo / Hong Kong / Shanghai",
+    "date": "2024-2025",
+    "custom": {
+      "Style": "Urban Night",
+      "Tone": "Cyberpunk"
+    },
+    "photos": [
+      {
+        "src": "/photos/collections/sample-collection-2/01.jpg",
+        "title": "Neon Alley",
+        "description": "Neon lights painting the rain-soaked streets of Shinjuku.",
+        "location": "Kabukicho, Shinjuku, Tokyo",
+        "date": "2024-08-22",
+        "camera": "Sony A7 IV + 35mm f/1.4",
+        "note": "Every visit to Tokyo, this alley feels different.",
+        "custom": {
+          "White Balance": "3200K",
+          "Post Style": "Cinematic"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-2/03.jpg",
+        "title": "Typewriter Memories",
+        "description": "A vintage typewriter in a cafe corner, carrying stories from last century.",
+        "location": "Hengshan Road, Shanghai",
+        "date": "2025-01-20",
+        "camera": "Fujifilm X-T5 + 56mm f/1.2",
+        "note": "In the digital age, the beauty of mechanical things becomes even more precious.",
+        "custom": {
+          "Film Simulation": "Classic Chrome",
+          "Mood": "Nostalgic"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-2/02.jpg",
+        "title": "Victoria Harbour Night",
+        "description": "Ten thousand lights from The Peak overlooking Victoria Harbour.",
+        "location": "The Peak, Hong Kong",
+        "date": "2024-10-01",
+        "camera": "Nikon Z8 + 24-70mm f/2.8",
+        "note": "National Day evening, the whole harbor celebrating.",
+        "custom": {
+          "Tripod": "Peak Design Travel",
+          "Exposure": "8s"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-2/04.jpg",
+        "title": "Empty Theater",
+        "description": "An empty theater after the show, lights not yet fully dimmed.",
+        "location": "National Centre, Beijing",
+        "date": "2025-03-05",
+        "camera": "Canon R5 + 16-35mm f/2.8",
+        "note": "Stayed five extra minutes after everyone left. This moment was mine alone.",
+        "custom": {
+          "Composition": "Symmetry"
+        }
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "slug": "quiet-moments",
+    "title": "Quiet Moments",
+    "description": "Stillness in the everyday.",
+    "location": "Various",
+    "date": "2024-2025",
+    "custom": {
+      "Style": "Still Life / Minimal",
+      "Mood": "Calm"
+    },
+    "photos": [
+      {
+        "src": "/photos/collections/sample-collection-3/01.jpg",
+        "title": "Dandelion Journey",
+        "description": "A dandelion swaying gently in hand, waiting for the wind.",
+        "location": "Chengdu",
+        "date": "2024-04-10",
+        "camera": "Canon R6 II + 85mm f/1.4",
+        "note": "My daughter handed it to me and said 'Daddy, quick, take a photo!'",
+        "custom": {
+          "Aperture": "f/1.4",
+          "Depth of Field": "Ultra shallow"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-3/02.jpg",
+        "title": "Ridge Sunset",
+        "description": "The last ray of light sweeping across the mountain ridge.",
+        "location": "Mount Niubei, Sichuan",
+        "date": "2024-07-18",
+        "camera": "Sony A7C II + 70-200mm f/4",
+        "note": "Waited three days for this weather. It rained every day on the mountain until the third day finally cleared.",
+        "custom": {
+          "Altitude": "3666m",
+          "Temperature": "2 C",
+          "GND Filter": "0.9 Soft Grad"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-3/03.jpg",
+        "title": "Lightning & City",
+        "description": "The last bolt of lightning before the storm, splitting the entire skyline.",
+        "location": "Nanshan, Shenzhen",
+        "date": "2024-09-03",
+        "camera": "Nikon Z6 III + 14-24mm f/2.8",
+        "note": "Shooting in storms is dangerous, but some scenes only exist in these moments. Stay safe.",
+        "custom": {
+          "Shutter": "30s",
+          "Trigger": "Lightning Trigger"
+        }
+      },
+      {
+        "src": "/photos/collections/sample-collection-3/04.jpg",
+        "title": "Ferry at Dusk",
+        "description": "The last ferry heading to the other shore, sunset gilding the river.",
+        "location": "Chaotianmen, Chongqing",
+        "date": "2025-02-28",
+        "camera": "Hasselblad X2D + 55mm f/2.5",
+        "note": "Medium format color transitions are unmatched, especially with gradient skies like this.",
+        "custom": {
+          "Format": "Medium Format 44x33mm",
+          "Color Space": "Hasselblad Natural Color",
+          "File": "16bit RAW"
+        }
+      }
+    ]
+  }
+]
