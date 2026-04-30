@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <title>20030919 Photography</title>
+        <title>Folio</title>
       </Head>
       <Component {...pageProps} />
     </>
