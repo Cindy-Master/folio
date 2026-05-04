@@ -327,6 +327,7 @@ const inputSmCls = 'mt-1 w-full px-3 py-1.5 rounded border border-gray-200 dark:
 function CollectionItem({ collection, onDelete, onRefresh }) {
   const [expanded, setExpanded] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
   const [editing, setEditing] = useState(false)
   const [localPhotos, setLocalPhotos] = useState(collection.photos)
   const [orderChanged, setOrderChanged] = useState(false)
@@ -353,16 +354,40 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
     if (!files.length) return
     setUploading(true)
 
-    for (let i = 0; i < files.length; i++) {
-      const fd = new FormData()
-      fd.append('slug', collection.slug)
-      fd.append('files', files[i])
-      await fetch('/api/upload', { method: 'POST', body: fd })
+    const total = files.length
+    let success = 0
+    let failed = []
+
+    for (let i = 0; i < total; i++) {
+      setUploadProgress(`${i + 1} / ${total}: ${files[i].name}`)
+      try {
+        const fd = new FormData()
+        fd.append('slug', collection.slug)
+        fd.append('files', files[i])
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        if (res.ok) {
+          success++
+        } else {
+          const data = await res.json().catch(() => ({}))
+          failed.push(`${files[i].name}: ${data.error || 'unknown error'}`)
+        }
+      } catch (err) {
+        failed.push(`${files[i].name}: network error`)
+      }
     }
 
     fileRef.current.value = ''
     setUploading(false)
+
+    if (failed.length > 0) {
+      setUploadProgress(`${success} success, ${failed.length} failed`)
+      alert(`Upload complete: ${success} success, ${failed.length} failed\n\n${failed.join('\n')}`)
+    } else {
+      setUploadProgress(`${success} uploaded`)
+    }
+
     onRefresh()
+    setTimeout(() => setUploadProgress(''), 3000)
   }
 
   async function handleSaveCollection() {
@@ -496,6 +521,7 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
             <button onClick={() => fileRef.current.click()} disabled={uploading} className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm hover:bg-gray-800 disabled:opacity-50 transition-colors cursor-pointer">
               {uploading ? '上传中...' : '上传照片'}
             </button>
+            {uploadProgress && <span className="text-xs text-gray-500 dark:text-gray-400">{uploadProgress}</span>}
             <button onClick={editing ? () => setEditing(false) : startEditing} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors cursor-pointer">
               {editing ? '收起编辑' : '编辑信息'}
             </button>
