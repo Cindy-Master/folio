@@ -349,17 +349,17 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
   }
 
   async function handleUpload(e) {
-    const files = e.target.files
+    const files = Array.from(e.target.files)
     if (!files.length) return
     setUploading(true)
 
-    const fd = new FormData()
-    fd.append('slug', collection.slug)
-    for (const file of files) {
-      fd.append('files', file)
+    for (let i = 0; i < files.length; i++) {
+      const fd = new FormData()
+      fd.append('slug', collection.slug)
+      fd.append('files', files[i])
+      await fetch('/api/upload', { method: 'POST', body: fd })
     }
 
-    await fetch('/api/upload', { method: 'POST', body: fd })
     fileRef.current.value = ''
     setUploading(false)
     onRefresh()
