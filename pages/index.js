@@ -92,13 +92,13 @@ function CollectionCard({ collection, locale }) {
     <Link href={`/collections/${collection.slug}`} className="group block">
       <div className="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 aspect-[4/3] grid grid-cols-3 grid-rows-2 gap-0.5 collection-card">
         <div className="col-span-2 row-span-2 relative overflow-hidden">
-          {main && <img src={main.src} alt={main.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+          {main && <img src={main.src} alt={main.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
         </div>
         <div className="relative overflow-hidden">
-          {side1 && <img src={side1.src} alt={side1.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+          {side1 && <img src={side1.src} alt={side1.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
         </div>
         <div className="relative overflow-hidden">
-          {side2 && <img src={side2.src} alt={side2.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+          {side2 && <img src={side2.src} alt={side2.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
         </div>
       </div>
       <h3 className="mt-3 text-base font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">{collection.title}</h3>
@@ -158,6 +158,9 @@ export default function Home({ profile, collections }) {
           <button onClick={() => setTab('collections')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'collections' ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
             {t(locale, 'collections')} {collections.length}
           </button>
+          <button onClick={() => setTab('film')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'film' ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
+            {t(locale, 'filmView')}
+          </button>
         </div>
       </div>
 
@@ -167,10 +170,49 @@ export default function Home({ profile, collections }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {collections.map((c) => <CollectionCard key={c.id} collection={c} locale={locale} />)}
           </div>
+        ) : tab === 'film' ? (
+          <div className="flex flex-col gap-6">
+            {collections.map((col) => {
+              const offset = collections.slice(0, collections.indexOf(col)).reduce((s, c) => s + c.photos.length, 0)
+              return (
+                <div key={col.id}>
+                  <div className="flex items-baseline justify-between mb-2">
+                    <Link href={`/collections/${col.slug}`} className="group flex items-baseline gap-2">
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors">{col.title}</h3>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{col.photos.length} {t(locale, 'images')}</span>
+                    </Link>
+                    {col.location && <span className="text-xs text-gray-400 dark:text-gray-500">{col.location}</span>}
+                  </div>
+                  <div className="relative bg-gray-900 dark:bg-gray-800 rounded-lg overflow-hidden">
+                    <div className="flex justify-between px-3 py-[5px]">
+                      {Array.from({ length: Math.max(col.photos.length * 2, 14) }).map((_, i) => (
+                        <div key={i} className="w-[6px] h-[4px] bg-gray-700 dark:bg-gray-600 rounded-[1px]" />
+                      ))}
+                    </div>
+                    <div className="overflow-x-auto film-strip-scroll">
+                      <div className="flex gap-[6px] px-3 py-1 min-w-max">
+                        {col.photos.map((photo, i) => (
+                          <div key={i} className="shrink-0 relative group cursor-pointer" onClick={() => setLightboxIndex(offset + i)}>
+                            <img src={photo.src} alt={photo.title} loading="lazy" className="w-[150px] h-[100px] sm:w-[180px] sm:h-[120px] object-cover rounded-[2px] group-hover:brightness-110 transition-all" />
+                            <span className="absolute bottom-1 right-1.5 text-[8px] text-white/40 font-mono">{String(i + 1).padStart(3, '0')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex justify-between px-3 py-[5px]">
+                      {Array.from({ length: Math.max(col.photos.length * 2, 14) }).map((_, i) => (
+                        <div key={i} className="w-[6px] h-[4px] bg-gray-700 dark:bg-gray-600 rounded-[1px]" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         ) : (
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
             {allPhotos.map((photo, index) => (
-              <img key={index} src={photo.src} alt={photo.title} onClick={() => setLightboxIndex(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
+              <img key={index} src={photo.src} alt={photo.title} loading="lazy" onClick={() => setLightboxIndex(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
             ))}
           </div>
         )}

@@ -96,6 +96,7 @@ function FilmStripView({ photos, filmBg, onPhotoClick }) {
               <img
                 src={photo.src}
                 alt={photo.title}
+                loading="lazy"
                 className="w-[150px] h-[100px] sm:w-[180px] sm:h-[120px] object-cover rounded-[2px] group-hover:brightness-110 transition-all"
               />
               <span className={`absolute bottom-1 right-1.5 text-[8px] font-mono ${numColor}`}>
@@ -203,7 +204,7 @@ export default function CollectionPage({ collection, profile }) {
         ) : (
           <div className="columns-2 md:columns-3 gap-4 space-y-4">
             {collection.photos.map((photo, index) => (
-              <img key={index} src={photo.src} alt={photo.title} onClick={() => openLightbox(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
+              <img key={index} src={photo.src} alt={photo.title} loading="lazy" onClick={() => openLightbox(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
             ))}
           </div>
         )}
