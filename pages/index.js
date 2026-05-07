@@ -113,84 +113,6 @@ function CollectionCard({ collection, locale }) {
   )
 }
 
-function FilmStrip({ collection, locale, onPhotoClick, photoIndexOffset }) {
-  return (
-    <div className="mb-8">
-      {/* Collection title */}
-      <div className="flex items-baseline justify-between mb-3">
-        <Link href={`/collections/${collection.slug}`} className="group flex items-baseline gap-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors">
-            {collection.title}
-          </h3>
-          <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-            {collection.photos.length} {locale === 'zh' ? '张' : 'frames'}
-          </span>
-        </Link>
-        {collection.location && (
-          <span className="text-xs text-gray-400 dark:text-gray-500">{collection.location}</span>
-        )}
-      </div>
-
-      {/* Film strip container */}
-      <div className="relative bg-gray-900 dark:bg-gray-800 rounded-lg overflow-hidden">
-        {/* Sprocket holes top */}
-        <div className="flex justify-between px-3 py-[5px]">
-          {Array.from({ length: Math.max(collection.photos.length * 2, 12) }).map((_, i) => (
-            <div key={i} className="w-[6px] h-[4px] bg-gray-700 dark:bg-gray-600 rounded-[1px]" />
-          ))}
-        </div>
-
-        {/* Photos row */}
-        <div className="overflow-x-auto film-strip-scroll">
-          <div className="flex gap-[6px] px-3 py-1 min-w-max">
-            {collection.photos.map((photo, i) => (
-              <div key={i} className="shrink-0 relative group cursor-pointer" onClick={() => onPhotoClick(photoIndexOffset + i)}>
-                <img
-                  src={photo.src}
-                  alt={photo.title}
-                  className="w-[140px] h-[95px] sm:w-[170px] sm:h-[115px] object-cover rounded-[2px] group-hover:brightness-110 transition-all"
-                />
-                <span className="absolute bottom-1 right-1 text-[8px] text-white/50 font-mono">
-                  {String(i + 1).padStart(3, '0')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sprocket holes bottom */}
-        <div className="flex justify-between px-3 py-[5px]">
-          {Array.from({ length: Math.max(collection.photos.length * 2, 12) }).map((_, i) => (
-            <div key={i} className="w-[6px] h-[4px] bg-gray-700 dark:bg-gray-600 rounded-[1px]" />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function FilmView({ collections, locale, onPhotoClick }) {
-  let offset = 0
-
-  return (
-    <div>
-      {collections.map((col) => {
-        const strip = (
-          <FilmStrip
-            key={col.id}
-            collection={col}
-            locale={locale}
-            onPhotoClick={onPhotoClick}
-            photoIndexOffset={offset}
-          />
-        )
-        offset += col.photos.length
-        return strip
-      })}
-    </div>
-  )
-}
-
 export default function Home({ profile, collections }) {
   const { locale, theme, toggleLocale, toggleTheme, mounted } = useSettings()
   const [tab, setTab] = useState('collections')
@@ -236,9 +158,6 @@ export default function Home({ profile, collections }) {
           <button onClick={() => setTab('collections')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'collections' ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
             {t(locale, 'collections')} {collections.length}
           </button>
-          <button onClick={() => setTab('film')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'film' ? 'border-[#c9a84c] text-[#c9a84c]' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
-            {t(locale, 'filmView')}
-          </button>
         </div>
       </div>
 
@@ -248,12 +167,6 @@ export default function Home({ profile, collections }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {collections.map((c) => <CollectionCard key={c.id} collection={c} locale={locale} />)}
           </div>
-        ) : tab === 'film' ? (
-          <FilmView
-            collections={collections}
-            locale={locale}
-            onPhotoClick={(index) => setLightboxIndex(index)}
-          />
         ) : (
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
             {allPhotos.map((photo, index) => (
