@@ -47,45 +47,16 @@ body {
 .collection-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
 :is(.dark) .collection-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
 
-/* Film strip */
-.film-strip {
-  position: relative;
-  background: #1a1a1a;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.film-strip::before,
-.film-strip::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 12px;
-  z-index: 2;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    transparent 4px,
-    #0a0a0a 4px,
-    #0a0a0a 8px,
-    transparent 8px,
-    transparent 20px
-  );
-}
-
-.film-strip::before { top: 0; }
-.film-strip::after { bottom: 0; }
-
+/* Film strip horizontal scroll */
 .film-strip-scroll {
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: #333 transparent;
+  scrollbar-color: #555 transparent;
 }
 
 .film-strip-scroll::-webkit-scrollbar { height: 4px; }
 .film-strip-scroll::-webkit-scrollbar-track { background: transparent; }
-.film-strip-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+.film-strip-scroll::-webkit-scrollbar-thumb { background: #555; border-radius: 2px; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
