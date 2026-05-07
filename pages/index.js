@@ -113,6 +113,109 @@ function CollectionCard({ collection, locale }) {
   )
 }
 
+function FilmStripRow({ collection, locale, onPhotoClick, photoIndexOffset }) {
+  return (
+    <div className="flex gap-0 items-stretch bg-[#111] rounded-lg overflow-hidden border border-[#222]">
+      {/* Left info panel */}
+      <div className="shrink-0 w-48 p-5 flex flex-col justify-center border-r border-[#222]">
+        <p className="text-[#c9a84c] text-[10px] tracking-[3px] uppercase font-mono mb-1">{collection.title}</p>
+        <h3 className="text-white text-lg font-bold tracking-wide mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+          {collection.title}
+        </h3>
+        <p className="text-[#666] text-[10px] font-mono mb-1">
+          {collection.photos.length} {locale === 'zh' ? '张' : 'EXP'}
+        </p>
+        {collection.location && (
+          <p className="text-[#555] text-[10px] font-mono mb-3">{collection.location}</p>
+        )}
+        <Link href={`/collections/${collection.slug}`} className="text-[#c9a84c] text-[10px] tracking-[2px] uppercase font-mono hover:text-[#e0c068] transition-colors">
+          {locale === 'zh' ? '查看详情' : 'VIEW DETAILS'} &rarr;
+        </Link>
+      </div>
+
+      {/* Film strip */}
+      <div className="flex-1 film-strip">
+        {/* Top sprocket label */}
+        <div className="flex items-center h-[18px] px-2 relative z-[3]">
+          <span className="text-[8px] text-[#666] font-mono tracking-[2px] uppercase ml-1">{collection.title}</span>
+        </div>
+
+        {/* Photos scroll */}
+        <div className="film-strip-scroll">
+          <div className="flex gap-[3px] px-1 pb-0">
+            {collection.photos.map((photo, i) => (
+              <div key={i} className="shrink-0 flex flex-col items-center">
+                <span className="text-[7px] text-[#555] font-mono mb-[2px]">
+                  {String(i + 1).padStart(3, '0')}
+                </span>
+                <img
+                  src={photo.src}
+                  alt={photo.title}
+                  onClick={() => onPhotoClick(photoIndexOffset + i)}
+                  className="w-[120px] h-[80px] object-cover cursor-pointer hover:brightness-110 transition-all"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom sprocket space */}
+        <div className="h-[14px] relative z-[3]" />
+      </div>
+    </div>
+  )
+}
+
+function FilmView({ collections, locale, onPhotoClick, allPhotos }) {
+  let offset = 0
+
+  return (
+    <div className="bg-[#0a0a0a] -mx-4 sm:-mx-6 px-4 sm:px-6 py-10 rounded-xl">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <p className="text-[#666] text-[10px] tracking-[3px] uppercase font-mono mb-2">ANALOG ARCHIVE</p>
+          <h2 className="text-white text-3xl font-bold mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+            {locale === 'zh' ? '胶卷档案' : 'Film Archive'}
+          </h2>
+          <p className="text-[#555] text-xs tracking-[1px] font-mono uppercase">
+            {locale === 'zh' ? '胶片定格的瞬间' : 'A collection of moments, captured on film.'}
+          </p>
+        </div>
+        <div className="border border-[#333] rounded px-4 py-3 text-center">
+          <p className="text-[#666] text-[8px] tracking-[2px] uppercase font-mono">{locale === 'zh' ? '总帧数' : 'TOTAL FRAMES'}</p>
+          <p className="text-white text-2xl font-bold font-mono">{allPhotos.length}</p>
+          <p className="text-[#555] text-[9px] font-mono">{collections.length} {locale === 'zh' ? '卷' : 'ROLLS'}</p>
+        </div>
+      </div>
+
+      {/* Film strips */}
+      <div className="flex flex-col gap-4">
+        {collections.map((col) => {
+          const row = (
+            <FilmStripRow
+              key={col.id}
+              collection={col}
+              locale={locale}
+              onPhotoClick={onPhotoClick}
+              photoIndexOffset={offset}
+            />
+          )
+          offset += col.photos.length
+          return row
+        })}
+      </div>
+
+      {/* Footer */}
+      <div className="mt-10 text-center">
+        <p className="text-[#333] text-[10px] tracking-[4px] uppercase font-mono">
+          FILM IS NOT DEAD
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function Home({ profile, collections }) {
   const { locale, theme, toggleLocale, toggleTheme, mounted } = useSettings()
   const [tab, setTab] = useState('collections')
@@ -130,9 +233,6 @@ export default function Home({ profile, collections }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">{profile.name}</span>
           <div className="flex items-center gap-3">
-            <a href="https://github.com/Cindy-Master/folio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
             {mounted && (
               <>
                 <button onClick={toggleLocale} className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
@@ -161,6 +261,9 @@ export default function Home({ profile, collections }) {
           <button onClick={() => setTab('collections')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'collections' ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
             {t(locale, 'collections')} {collections.length}
           </button>
+          <button onClick={() => setTab('film')} className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${tab === 'film' ? 'border-[#c9a84c] text-[#c9a84c]' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'}`}>
+            {t(locale, 'filmView')}
+          </button>
         </div>
       </div>
 
@@ -170,6 +273,13 @@ export default function Home({ profile, collections }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {collections.map((c) => <CollectionCard key={c.id} collection={c} locale={locale} />)}
           </div>
+        ) : tab === 'film' ? (
+          <FilmView
+            collections={collections}
+            locale={locale}
+            allPhotos={allPhotos}
+            onPhotoClick={(index) => setLightboxIndex(index)}
+          />
         ) : (
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
             {allPhotos.map((photo, index) => (
