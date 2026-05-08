@@ -61,6 +61,8 @@ function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }) {
 export default function CollectionPage({ collection, profile }) {
   const { locale, theme, toggleLocale, toggleTheme, mounted } = useSettings()
   const [lightboxIndex, setLightboxIndex] = useState(null)
+  const [viewMode, setViewMode] = useState('showcase') // 'showcase' | 'grid'
+  const [heroIndex, setHeroIndex] = useState(0)
   const [count, setCount] = useState(PAGE_SIZE)
   const loaderRef = useRef(null)
 
@@ -71,8 +73,14 @@ export default function CollectionPage({ collection, profile }) {
 
   const total = collection.photos.length
   const hasMore = count < total
+  const heroPhoto = collection.photos[heroIndex]
+  const otherPhotos = collection.photos.filter((_, i) => i !== heroIndex)
+
+  function heroPrev() { setHeroIndex((i) => (i === 0 ? total - 1 : i - 1)) }
+  function heroNext() { setHeroIndex((i) => (i === total - 1 ? 0 : i + 1)) }
 
   useEffect(() => {
+    if (viewMode !== 'grid') return
     const el = loaderRef.current
     if (!el) return
     const observer = new IntersectionObserver(
@@ -81,7 +89,7 @@ export default function CollectionPage({ collection, profile }) {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [total])
+  }, [total, viewMode])
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
@@ -94,6 +102,15 @@ export default function CollectionPage({ collection, profile }) {
             <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">{profile.name}</span>
           </div>
           <div className="flex items-center gap-3">
+            {/* View mode toggle */}
+            <div className="flex rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <button onClick={() => setViewMode('showcase')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'showcase' ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+                {locale === 'zh' ? '展览' : 'Showcase'}
+              </button>
+              <button onClick={() => setViewMode('grid')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'grid' ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+                {locale === 'zh' ? '平铺' : 'Grid'}
+              </button>
+            </div>
             {mounted && (
               <>
                 <button onClick={toggleLocale} className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
@@ -108,31 +125,113 @@ export default function CollectionPage({ collection, profile }) {
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{collection.title}</h1>
-        {collection.description && <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{collection.description}</p>}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400 dark:text-gray-500">
-          <span>{total} {t(locale, 'photos').toLowerCase()}</span>
-          {collection.location && <span>{collection.location}</span>}
-          {collection.date && <span>{collection.date}</span>}
-          {Object.entries(collection.custom || {}).map(([k, v]) => (
-            <span key={k}>{k}: {v}</span>
-          ))}
-        </div>
-      </div>
+      {viewMode === 'showcase' ? (
+        <>
+          {/* Hero section */}
+          <div className="relative w-full" style={{ minHeight: '60vh' }}>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+              {/* Hero image */}
+              <div className="relative cursor-pointer" onClick={() => openLightbox(heroIndex)}>
+                <img
+                  src={heroPhoto.src}
+                  alt={heroPhoto.title}
+                  className="w-full max-h-[70vh] object-contain rounded-lg"
+                />
+                {/* Prev/Next arrows */}
+                {total > 1 && (
+                  <>
+                    <button onClick={(e) => { e.stopPropagation(); heroPrev() }} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors cursor-pointer">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); heroNext() }} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors cursor-pointer">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                    </button>
+                  </>
+                )}
+                {/* Counter */}
+                <div className="absolute bottom-3 right-3 bg-black/40 text-white text-xs px-2 py-1 rounded font-mono">
+                  {heroIndex + 1} / {total}
+                </div>
+              </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="columns-2 md:columns-3 gap-4 space-y-4">
-          {collection.photos.slice(0, count).map((photo, index) => (
-            <img key={index} src={photo.src} alt={photo.title} loading="lazy" onClick={() => openLightbox(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
-          ))}
-        </div>
-        {hasMore && (
-          <div ref={loaderRef} className="text-center py-8">
-            <span className="text-sm text-gray-400">{locale === 'zh' ? '加载更多...' : 'Loading more...'}</span>
+              {/* Hero info */}
+              <div className="mt-4 mb-2">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{collection.title}</h1>
+                {collection.description && <p className="text-gray-500 dark:text-gray-400 mt-1">{collection.description}</p>}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400 dark:text-gray-500 mt-2">
+                  {collection.location && <span>{collection.location}</span>}
+                  {collection.date && <span>{collection.date}</span>}
+                  {Object.entries(collection.custom || {}).map(([k, v]) => (
+                    <span key={k}>{k}: {v}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Photo title/info */}
+              {heroPhoto.title && (
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{heroPhoto.title}</p>
+                  {heroPhoto.description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{heroPhoto.description}</p>}
+                  {(heroPhoto.location || heroPhoto.date || heroPhoto.camera) && (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{[heroPhoto.location, heroPhoto.date, heroPhoto.camera].filter(Boolean).join(' · ')}</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Thumbnail grid below */}
+          {otherPhotos.length > 0 && (
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
+                {otherPhotos.map((photo, i) => {
+                  const realIndex = collection.photos.indexOf(photo)
+                  return (
+                    <img
+                      key={realIndex}
+                      src={photo.src}
+                      alt={photo.title}
+                      loading="lazy"
+                      onClick={() => { setHeroIndex(realIndex); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                      className={`w-full aspect-square object-cover cursor-pointer hover:opacity-80 transition-opacity ${realIndex === heroIndex ? 'ring-2 ring-gray-900 dark:ring-white' : ''}`}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Grid mode header */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{collection.title}</h1>
+            {collection.description && <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{collection.description}</p>}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400 dark:text-gray-500">
+              <span>{total} {t(locale, 'photos').toLowerCase()}</span>
+              {collection.location && <span>{collection.location}</span>}
+              {collection.date && <span>{collection.date}</span>}
+              {Object.entries(collection.custom || {}).map(([k, v]) => (
+                <span key={k}>{k}: {v}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Grid photos */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+            <div className="columns-2 md:columns-3 gap-4 space-y-4">
+              {collection.photos.slice(0, count).map((photo, index) => (
+                <img key={index} src={photo.src} alt={photo.title} loading="lazy" onClick={() => openLightbox(index)} className="w-full rounded-lg break-inside-avoid cursor-pointer photo-card" />
+              ))}
+            </div>
+            {hasMore && (
+              <div ref={loaderRef} className="text-center py-8">
+                <span className="text-sm text-gray-400">{locale === 'zh' ? '加载更多...' : 'Loading more...'}</span>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {lightboxIndex !== null && <Lightbox photos={collection.photos} currentIndex={lightboxIndex} onClose={closeLightbox} onPrev={goPrev} onNext={goNext} />}
     </div>
