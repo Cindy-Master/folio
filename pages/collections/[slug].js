@@ -127,17 +127,22 @@ export default function CollectionPage({ collection, profile }) {
   const pageBg = bgMode === 'black' ? '#000' : bgMode === 'white' ? '#fff' : themeColor
   const isPageDark = bgMode === 'black' || (bgMode === 'theme' && themeColor)
   const isPageLight = bgMode === 'white'
-  // Simple luminance check for theme color
+  // Luminance check - supports rgb() and hex
   const textOnBg = (() => {
     if (bgMode === 'black') return 'text-white'
     if (bgMode === 'white') return 'text-gray-900'
-    // For theme color, check brightness
-    const m = themeColor.match(/rgb\((\d+),(\d+),(\d+)\)/)
-    if (m) {
-      const lum = (parseInt(m[1]) * 299 + parseInt(m[2]) * 587 + parseInt(m[3]) * 114) / 1000
-      return lum > 128 ? 'text-gray-900' : 'text-white'
+    let r = 0, g = 0, b = 0
+    const rgbMatch = themeColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
+    const hexMatch = themeColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)
+    if (rgbMatch) {
+      r = parseInt(rgbMatch[1]); g = parseInt(rgbMatch[2]); b = parseInt(rgbMatch[3])
+    } else if (hexMatch) {
+      r = parseInt(hexMatch[1], 16); g = parseInt(hexMatch[2], 16); b = parseInt(hexMatch[3], 16)
+    } else {
+      return 'text-white'
     }
-    return 'text-white'
+    const lum = (r * 299 + g * 587 + b * 114) / 1000
+    return lum > 128 ? 'text-gray-900' : 'text-white'
   })()
   const textMuted = textOnBg === 'text-white' ? 'text-white/60' : 'text-gray-500'
   const textFaint = textOnBg === 'text-white' ? 'text-white/40' : 'text-gray-400'
