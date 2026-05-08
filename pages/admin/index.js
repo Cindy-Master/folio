@@ -505,7 +505,7 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
                   </label>
                 </div>
                 <label className="block">
-                  <span className="text-xs text-gray-500">{locale === 'zh' ? '主色调（留空自动提取封面色）' : 'Theme color (blank = auto from cover)'}</span>
+                  <span className="text-xs text-gray-500">主色调（留空自动提取封面色）</span>
                   <div className="flex gap-2 mt-1 items-center">
                     <input type="color" value={form.themeColor || '#000000'} onChange={(e) => updateForm('themeColor', e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0 p-0" />
                     <input value={form.themeColor || ''} onChange={(e) => updateForm('themeColor', e.target.value)} className={inputCls} placeholder="#2a3b4c" />
