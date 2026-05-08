@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-const { isAuthenticated } = require('../../lib/auth')
-const { addPhotoToCollection } = require('../../lib/data')
+import fs from 'fs'
+import path from 'path'
+import { isAuthenticated } from '../../lib/auth'
+import { addPhotoToCollection } from '../../lib/data'
 
 const ALLOWED_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.bmp', '.tiff'])
 const MAX_SIZE = 20 * 1024 * 1024 // 20MB

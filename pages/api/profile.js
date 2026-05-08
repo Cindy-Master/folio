@@ -1,5 +1,5 @@
-const { isAuthenticated } = require('../../lib/auth')
-const { getProfile, updateProfile } = require('../../lib/data')
+import { isAuthenticated } from '../../lib/auth'
+import { getProfile, updateProfile } from '../../lib/data'
 
 export default function handler(req, res) {
   if (req.method === 'GET') {

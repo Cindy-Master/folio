@@ -1,4 +1,4 @@
-const { isAuthenticated } = require('../../lib/auth')
+import { isAuthenticated } from '../../lib/auth'
 
 export default function handler(req, res) {
   if (isAuthenticated(req)) {

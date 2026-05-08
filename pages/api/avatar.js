@@ -1,6 +1,6 @@
-const fs = require('fs')
-const path = require('path')
-const { isAuthenticated } = require('../../lib/auth')
+import fs from 'fs'
+import path from 'path'
+import { isAuthenticated } from '../../lib/auth'
 
 const ALLOWED_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'])
 

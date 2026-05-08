@@ -1,4 +1,4 @@
-const { getTokenCookieName } = require('../../lib/auth')
+import { getTokenCookieName } from '../../lib/auth'
 
 export default function handler(req, res) {
   if (req.method !== 'POST') {

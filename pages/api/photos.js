@@ -1,5 +1,5 @@
-const { isAuthenticated } = require('../../lib/auth')
-const { removePhotoFromCollection, reorderPhotos, updatePhoto } = require('../../lib/data')
+import { isAuthenticated } from '../../lib/auth'
+import { removePhotoFromCollection, reorderPhotos, updatePhoto } from '../../lib/data'
 
 export default function handler(req, res) {
   if (!isAuthenticated(req)) {
