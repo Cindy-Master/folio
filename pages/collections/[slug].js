@@ -122,46 +122,45 @@ export default function CollectionPage({ collection, profile }) {
       </nav>
 
       {viewMode === 'showcase' ? (
-        <>
-          {/* Cover hero */}
-          <div className="relative w-full cursor-pointer" onClick={() => openLightbox(0)}>
-            <img
-              src={coverPhoto.src}
-              alt={coverPhoto.title}
-              className="w-full max-h-[75vh] object-cover"
-            />
-            {/* Title overlay */}
-            <div className="absolute inset-0 flex items-end">
-              <div className="w-full bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6 sm:p-10">
-                <h1 className="text-white text-3xl sm:text-4xl font-bold mb-1">{collection.title}</h1>
-                {collection.description && <p className="text-white/70 text-sm sm:text-base">{collection.description}</p>}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50 mt-2">
-                  {collection.location && <span>{collection.location}</span>}
-                  {collection.date && <span>{collection.date}</span>}
-                  <span>{total} {t(locale, 'photos').toLowerCase()}</span>
-                </div>
-              </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-16">
+          {/* Cover */}
+          <div className="relative cursor-pointer mb-[2px]" onClick={() => openLightbox(0)}>
+            <img src={coverPhoto.src} alt={coverPhoto.title} className="w-full object-cover" style={{ maxHeight: '70vh' }} />
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 bg-gradient-to-t from-black/50 to-transparent">
+              <h1 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight">{collection.title}</h1>
+              {collection.description && <p className="text-white/60 text-sm mt-1">{collection.description}</p>}
             </div>
           </div>
 
-          {/* Rest of photos */}
+          {/* Photo grid - pairs side by side, no gap */}
           {restPhotos.length > 0 && (
-            <div className="max-w-6xl mx-auto px-0 sm:px-6 pb-16">
-              <div className="grid grid-cols-2 gap-[2px] sm:gap-1">
-                {restPhotos.map((photo, i) => (
+            <div className="flex flex-wrap">
+              {restPhotos.map((photo, i) => (
+                <div key={i + 1} className="w-1/2 relative" style={{ paddingTop: '0' }}>
                   <img
-                    key={i + 1}
                     src={photo.src}
                     alt={photo.title}
                     loading="lazy"
                     onClick={() => openLightbox(i + 1)}
-                    className="w-full aspect-[4/3] object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                    className="w-full aspect-square object-cover cursor-pointer hover:opacity-90 transition-opacity border-[1px] border-white dark:border-gray-950"
                   />
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
-        </>
+
+          {/* Collection meta below photos */}
+          <div className="mt-8 text-center">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
+              {collection.location && <span>{collection.location}</span>}
+              {collection.date && <span>{collection.date}</span>}
+              <span>{total} {t(locale, 'photos').toLowerCase()}</span>
+              {Object.entries(collection.custom || {}).map(([k, v]) => (
+                <span key={k}>{k}: {v}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           {/* Grid mode header */}
