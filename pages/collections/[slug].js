@@ -62,7 +62,6 @@ export default function CollectionPage({ collection, profile }) {
   const { locale, theme, toggleLocale, toggleTheme, mounted } = useSettings()
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [viewMode, setViewMode] = useState('showcase') // 'showcase' | 'grid'
-  const [heroIndex, setHeroIndex] = useState(0)
   const [count, setCount] = useState(PAGE_SIZE)
   const loaderRef = useRef(null)
 
@@ -73,11 +72,8 @@ export default function CollectionPage({ collection, profile }) {
 
   const total = collection.photos.length
   const hasMore = count < total
-  const heroPhoto = collection.photos[heroIndex]
-  const otherPhotos = collection.photos.filter((_, i) => i !== heroIndex)
-
-  function heroPrev() { setHeroIndex((i) => (i === 0 ? total - 1 : i - 1)) }
-  function heroNext() { setHeroIndex((i) => (i === total - 1 ? 0 : i + 1)) }
+  const coverPhoto = collection.photos[0]
+  const restPhotos = collection.photos.slice(1)
 
   useEffect(() => {
     if (viewMode !== 'grid') return
@@ -127,76 +123,41 @@ export default function CollectionPage({ collection, profile }) {
 
       {viewMode === 'showcase' ? (
         <>
-          {/* Hero section */}
-          <div className="relative w-full" style={{ minHeight: '60vh' }}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-              {/* Hero image */}
-              <div className="relative cursor-pointer" onClick={() => openLightbox(heroIndex)}>
-                <img
-                  src={heroPhoto.src}
-                  alt={heroPhoto.title}
-                  className="w-full max-h-[70vh] object-contain rounded-lg"
-                />
-                {/* Prev/Next arrows */}
-                {total > 1 && (
-                  <>
-                    <button onClick={(e) => { e.stopPropagation(); heroPrev() }} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors cursor-pointer">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); heroNext() }} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors cursor-pointer">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-                    </button>
-                  </>
-                )}
-                {/* Counter */}
-                <div className="absolute bottom-3 right-3 bg-black/40 text-white text-xs px-2 py-1 rounded font-mono">
-                  {heroIndex + 1} / {total}
-                </div>
-              </div>
-
-              {/* Hero info */}
-              <div className="mt-4 mb-2">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{collection.title}</h1>
-                {collection.description && <p className="text-gray-500 dark:text-gray-400 mt-1">{collection.description}</p>}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400 dark:text-gray-500 mt-2">
+          {/* Cover hero */}
+          <div className="relative w-full cursor-pointer" onClick={() => openLightbox(0)}>
+            <img
+              src={coverPhoto.src}
+              alt={coverPhoto.title}
+              className="w-full max-h-[75vh] object-cover"
+            />
+            {/* Title overlay */}
+            <div className="absolute inset-0 flex items-end">
+              <div className="w-full bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6 sm:p-10">
+                <h1 className="text-white text-3xl sm:text-4xl font-bold mb-1">{collection.title}</h1>
+                {collection.description && <p className="text-white/70 text-sm sm:text-base">{collection.description}</p>}
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50 mt-2">
                   {collection.location && <span>{collection.location}</span>}
                   {collection.date && <span>{collection.date}</span>}
-                  {Object.entries(collection.custom || {}).map(([k, v]) => (
-                    <span key={k}>{k}: {v}</span>
-                  ))}
+                  <span>{total} {t(locale, 'photos').toLowerCase()}</span>
                 </div>
               </div>
-
-              {/* Photo title/info */}
-              {heroPhoto.title && (
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{heroPhoto.title}</p>
-                  {heroPhoto.description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{heroPhoto.description}</p>}
-                  {(heroPhoto.location || heroPhoto.date || heroPhoto.camera) && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{[heroPhoto.location, heroPhoto.date, heroPhoto.camera].filter(Boolean).join(' · ')}</p>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Thumbnail grid below */}
-          {otherPhotos.length > 0 && (
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
-                {otherPhotos.map((photo, i) => {
-                  const realIndex = collection.photos.indexOf(photo)
-                  return (
-                    <img
-                      key={realIndex}
-                      src={photo.src}
-                      alt={photo.title}
-                      loading="lazy"
-                      onClick={() => { setHeroIndex(realIndex); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                      className={`w-full aspect-square object-cover cursor-pointer hover:opacity-80 transition-opacity ${realIndex === heroIndex ? 'ring-2 ring-gray-900 dark:ring-white' : ''}`}
-                    />
-                  )
-                })}
+          {/* Rest of photos */}
+          {restPhotos.length > 0 && (
+            <div className="max-w-6xl mx-auto px-0 sm:px-6 pb-16">
+              <div className="grid grid-cols-2 gap-[2px] sm:gap-1">
+                {restPhotos.map((photo, i) => (
+                  <img
+                    key={i + 1}
+                    src={photo.src}
+                    alt={photo.title}
+                    loading="lazy"
+                    onClick={() => openLightbox(i + 1)}
+                    className="w-full aspect-[4/3] object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  />
+                ))}
               </div>
             </div>
           )}
