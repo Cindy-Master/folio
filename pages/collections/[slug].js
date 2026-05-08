@@ -24,7 +24,7 @@ function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }) {
     }
   }, [onClose, onPrev, onNext])
 
-  const bg = lightBg ? 'bg-white' : 'bg-black/90'
+  const bg = lightBg ? 'bg-white' : 'bg-black'
   const txt = lightBg ? 'text-gray-800' : 'text-white/90'
   const muted = lightBg ? 'text-gray-500' : 'text-white/60'
   const faint = lightBg ? 'text-gray-400' : 'text-white/40'
