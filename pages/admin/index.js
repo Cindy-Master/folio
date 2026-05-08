@@ -453,6 +453,7 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
       description: collection.description || '',
       location: collection.location || '',
       date: collection.date || '',
+      themeColor: collection.themeColor || '',
       custom: collection.custom || {},
     })
     setEditing(true)
@@ -503,6 +504,14 @@ function CollectionItem({ collection, onDelete, onRefresh }) {
                     <input value={form.date} onChange={(e) => updateForm('date', e.target.value)} className={inputCls} placeholder="如：2025-03" />
                   </label>
                 </div>
+                <label className="block">
+                  <span className="text-xs text-gray-500">{locale === 'zh' ? '主色调（留空自动提取封面色）' : 'Theme color (blank = auto from cover)'}</span>
+                  <div className="flex gap-2 mt-1 items-center">
+                    <input type="color" value={form.themeColor || '#000000'} onChange={(e) => updateForm('themeColor', e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0 p-0" />
+                    <input value={form.themeColor || ''} onChange={(e) => updateForm('themeColor', e.target.value)} className={inputCls} placeholder="#2a3b4c" />
+                    {form.themeColor && <button onClick={() => updateForm('themeColor', '')} className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer">Clear</button>}
+                  </div>
+                </label>
                 <CustomFieldsEditor fields={form.custom} onChange={(c) => updateForm('custom', c)} />
                 <div className="flex gap-2 pt-1">
                   <button onClick={handleSaveCollection} disabled={saving} className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm hover:bg-gray-800 disabled:opacity-50 transition-colors cursor-pointer">

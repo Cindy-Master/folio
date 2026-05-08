@@ -58,12 +58,48 @@ function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }) {
   )
 }
 
+function extractColor(imgSrc, callback) {
+  if (typeof window === 'undefined') return
+  const img = new Image()
+  img.crossOrigin = 'anonymous'
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    const size = 50
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, size, size)
+    const data = ctx.getImageData(0, 0, size, size).data
+    let r = 0, g = 0, b = 0, count = 0
+    for (let i = 0; i < data.length; i += 16) {
+      r += data[i]
+      g += data[i + 1]
+      b += data[i + 2]
+      count++
+    }
+    r = Math.round(r / count)
+    g = Math.round(g / count)
+    b = Math.round(b / count)
+    callback(`rgb(${r},${g},${b})`)
+  }
+  img.src = imgSrc
+}
+
 export default function CollectionPage({ collection, profile }) {
   const { locale, theme, toggleLocale, toggleTheme, mounted } = useSettings()
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [viewMode, setViewMode] = useState('showcase') // 'showcase' | 'grid'
+  const [bgMode, setBgMode] = useState('theme') // 'black' | 'white' | 'theme'
+  const [autoColor, setAutoColor] = useState(null)
   const [count, setCount] = useState(PAGE_SIZE)
   const loaderRef = useRef(null)
+
+  // Extract color from cover photo
+  useEffect(() => {
+    if (collection.photos.length > 0) {
+      extractColor(collection.photos[0].src, setAutoColor)
+    }
+  }, [collection.photos])
 
   const openLightbox = (index) => setLightboxIndex(index)
   const closeLightbox = () => setLightboxIndex(null)
@@ -87,33 +123,61 @@ export default function CollectionPage({ collection, profile }) {
     return () => observer.disconnect()
   }, [total, viewMode])
 
+  const themeColor = collection.themeColor || autoColor || '#111'
+  const pageBg = bgMode === 'black' ? '#000' : bgMode === 'white' ? '#fff' : themeColor
+  const isPageDark = bgMode === 'black' || (bgMode === 'theme' && themeColor)
+  const isPageLight = bgMode === 'white'
+  // Simple luminance check for theme color
+  const textOnBg = (() => {
+    if (bgMode === 'black') return 'text-white'
+    if (bgMode === 'white') return 'text-gray-900'
+    // For theme color, check brightness
+    const m = themeColor.match(/rgb\((\d+),(\d+),(\d+)\)/)
+    if (m) {
+      const lum = (parseInt(m[1]) * 299 + parseInt(m[2]) * 587 + parseInt(m[3]) * 114) / 1000
+      return lum > 128 ? 'text-gray-900' : 'text-white'
+    }
+    return 'text-white'
+  })()
+  const textMuted = textOnBg === 'text-white' ? 'text-white/60' : 'text-gray-500'
+  const textFaint = textOnBg === 'text-white' ? 'text-white/40' : 'text-gray-400'
+  const borderColor = textOnBg === 'text-white' ? 'border-white/10' : 'border-gray-200'
+  const btnStyle = textOnBg === 'text-white'
+    ? 'text-white/60 hover:text-white border-white/20'
+    : 'text-gray-400 hover:text-gray-700 border-gray-200'
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      <nav className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50 transition-colors">
+    <div className="min-h-screen transition-colors" style={{ backgroundColor: pageBg }}>
+      <nav className={`border-b ${borderColor} sticky top-0 z-50 transition-colors`} style={{ backgroundColor: pageBg }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors text-sm">
+            <Link href="/" className={`${textMuted} hover:${textOnBg} transition-colors text-sm`}>
               &larr; {t(locale, 'back')}
             </Link>
-            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">{profile.name}</span>
+            <span className={`text-xl font-bold tracking-tight ${textOnBg}`}>{profile.name}</span>
           </div>
-          <div className="flex items-center gap-3">
-            {/* View mode toggle */}
-            <div className="flex rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <button onClick={() => setViewMode('showcase')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'showcase' ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+          <div className="flex items-center gap-2">
+            {/* View mode */}
+            <div className={`flex rounded border ${borderColor} overflow-hidden`}>
+              <button onClick={() => setViewMode('showcase')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'showcase' ? (textOnBg === 'text-white' ? 'bg-white/20 text-white' : 'bg-gray-900 text-white') : btnStyle}`}>
                 {locale === 'zh' ? '展览' : 'Showcase'}
               </button>
-              <button onClick={() => setViewMode('grid')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'grid' ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+              <button onClick={() => setViewMode('grid')} className={`px-2 py-1 text-[10px] cursor-pointer transition-colors ${viewMode === 'grid' ? (textOnBg === 'text-white' ? 'bg-white/20 text-white' : 'bg-gray-900 text-white') : btnStyle}`}>
                 {locale === 'zh' ? '平铺' : 'Grid'}
               </button>
             </div>
+            {/* Background mode */}
+            <div className={`flex rounded border ${borderColor} overflow-hidden`}>
+              {['theme', 'black', 'white'].map((m) => (
+                <button key={m} onClick={() => setBgMode(m)} className={`px-1.5 py-1 text-[10px] cursor-pointer transition-colors ${bgMode === m ? (textOnBg === 'text-white' ? 'bg-white/20 text-white' : 'bg-gray-900 text-white') : btnStyle}`}>
+                  {m === 'theme' ? (locale === 'zh' ? '色调' : 'Theme') : m === 'black' ? 'B' : 'W'}
+                </button>
+              ))}
+            </div>
             {mounted && (
               <>
-                <button onClick={toggleLocale} className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                <button onClick={toggleLocale} className={`text-xs ${btnStyle} transition-colors cursor-pointer px-2 py-1 rounded border`}>
                   {locale === 'zh' ? 'EN' : '中文'}
-                </button>
-                <button onClick={toggleTheme} className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
-                  {theme === 'light' ? t(locale, 'darkMode') : t(locale, 'lightMode')}
                 </button>
               </>
             )}
@@ -151,7 +215,7 @@ export default function CollectionPage({ collection, profile }) {
 
           {/* Collection meta below photos */}
           <div className="mt-8 text-center">
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
+            <div className={`flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs ${textFaint}`}>
               {collection.location && <span>{collection.location}</span>}
               {collection.date && <span>{collection.date}</span>}
               <span>{total} {t(locale, 'photos').toLowerCase()}</span>
@@ -165,9 +229,9 @@ export default function CollectionPage({ collection, profile }) {
         <>
           {/* Grid mode header */}
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{collection.title}</h1>
-            {collection.description && <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{collection.description}</p>}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-400 dark:text-gray-500">
+            <h1 className={`text-3xl font-bold mb-2 ${textOnBg}`}>{collection.title}</h1>
+            {collection.description && <p className={`text-lg mb-2 ${textMuted}`}>{collection.description}</p>}
+            <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-sm ${textFaint}`}>
               <span>{total} {t(locale, 'photos').toLowerCase()}</span>
               {collection.location && <span>{collection.location}</span>}
               {collection.date && <span>{collection.date}</span>}

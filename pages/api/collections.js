@@ -23,7 +23,7 @@ export default function handler(req, res) {
   }
 
   if (req.method === 'PUT') {
-    const { slug, title, description, location, date, custom, slug: newSlug } = req.body
+    const { slug, title, description, location, date, custom, themeColor, slug: newSlug } = req.body
     if (!slug) {
       return res.status(400).json({ error: 'slug is required' })
     }
@@ -33,6 +33,7 @@ export default function handler(req, res) {
     if (location !== undefined) updates.location = location
     if (date !== undefined) updates.date = date
     if (custom !== undefined) updates.custom = custom
+    if (themeColor !== undefined) updates.themeColor = themeColor
     if (newSlug !== undefined && newSlug !== slug) updates.slug = newSlug
 
     const col = updateCollection(slug, updates)
